@@ -5,6 +5,7 @@
 - [Autopilot](#autopilot)
   - [Adapt or create rules](#adapt-or-create-rules)
 - [Add autopilot to the crontab(s)](#add-autopilot-to-the-crontabs)
+- [Update the branch and tag its tip](#update-the-branch-and-tag-its-tip)
 - [Appendix: Complete yaml files](#appendix-complete-yaml-files)
   - [Contents of `rules/run3oo_calo_physics_pro001_pcdb001_v001.yaml`](#contents-of-rulesrun3oo_calo_physics_pro001_pcdb001_v001yaml)
   - [Contents of `pilots/autopilot_run3oo_calo_physics_pro001_pcdb001_v001.yaml`](#contents-of-pilotsautopilot_run3oo_calo_physics_pro001_pcdb001_v001yaml)
@@ -211,8 +212,23 @@ sphnxpro@sphnxprod02 ~> emacs crontab.sphnxprod02
 sphnxpro@sphnxprod02 ~> crontab crontab.sphnxprod02
 ```
 
-
-
+## Update the branch and tag its tip
+To preserve what we're doing, now commit all changes and create a tag. 
+Double check we're not changing main:
+```bash
+git branch --show-current
+branch_run3oo_calo_pro001_pcdb001_v001
+```
+Commit everything with a reasonable message
+```bash
+git add .
+git commit -a -m "Setup for calo production using prod.001 and pcdbtag001"
+```
+And create an annotated lightweight tag, again reusing the name we've given this production. Then push everything to github.
+```bash
+git tag -a run3oo_calo_pro001_pcdb001_v001 -m "Setup for calo production using prod.001 and pcdbtag001"
+git push --follow-tags
+```
 
 
 
