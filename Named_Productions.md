@@ -48,9 +48,10 @@ tracking_code
 triggered_code
 ```
 
-Optional: We can delete unneeded directories, in this case tracking and streaming code:
+Optional: We can delete unneeded directories, in this case tracking and streaming code. It makes sense to delete the branch's copy of this markdown file as well to avoid accidental spaghettification; production specific comments should go into a dedicated README file.
 ```bash
-git rm -rf tracking_code streaming_code
+git rm -rf tracking_code streaming_code Named_Productions.md
+touch README_run3oo_calo_pro001_pcdb001_v001.md
 ```
 
 ## Macro directories
@@ -144,7 +145,7 @@ Note that `build`, `tag`, and `version` of the two steps don't need to be the sa
 #   condor:       "/tmp/sphenixprod/sphnxpro/{prodmode}/{period}/{physicsmode}/{outtriplet}/{leafdir}/{rungroup}/log" -->
 
 
-It is a good idea to look over the other fields as well. The full contents are in the [Appendix](#appendix-complete-yaml-files). Of particular interest are `dataset` and `physicsmode` for things like cosmics, and `request_memory`, which allows you to specify which RAM image sizes to try before condor gives up. Example:
+It is a good idea to look over the other fields as well. The full contents are in the [Appendix](#appendix-complete-yaml-files). Of particular interest are `dataset` and `physicsmode` for things like cosmics, and `request_memory`, which allows you to specify which RAM image sizes to try successively before condor gives up. Example:
 ```yaml
     request_memory:         2 GB, 3 GB, 5 GB
 ```
@@ -157,13 +158,13 @@ You could also periodically run `dstspider.py` and `histspider.py` with the same
 
 ## Autopilot
 Start from the appropriate template.
-```
+```bash
 cd pilots
 git mv autopilot_run3oo_calo_physics_PROD_TAG_VERSION.yaml autopilot_run3oo_calo_physics_pro001_pcdb001_v001.yaml
 ```
 
 ### Adapt or create rules
-The file needs a top node for any submission host you'd want to run this production on. It starts with paths
+The file needs a top node for any submission host you'd want to run this production on. It starts with paths:
 ```yaml
 sphnxprod01:
   defaultlocations:
@@ -171,7 +172,7 @@ sphnxprod01:
     configbase: /sphenix/u/sphnxpro/Production2026/run3oo_calo_pro001_pcdb001_v001/dir_run3oo_calo_pro001_pcdb001_v001/rules
     submitdir:  /sphenix/data/data03/sphnxpro/production/run3oo/submission/{rule}
 ```
-Most important here is to change `configbase`. Note that the production submission installation at `prodbase` can also be individualized. `submitdir` is merely a location for helper caches.
+Most important here is to change `configbase`. Note that the production submission installation at `prodbase` can also be individualized. `submitdir` is a location for helper caches, so make sure it's not in danger of being full.
 
 Now add an entry for each of the rules we want to run, ex.:
 ```yaml
@@ -189,21 +190,20 @@ Now add an entry for each of the rules we want to run, ex.:
     submit: on
 [...]
 ```
-The full file in the [Appendix](#appendix-complete-yaml-files) shows additional parameters to control the spider(s), monitoring, priority, etc. Also shown is a repetition that allows to run submission and/or spidering of the same job type from multiple hosts.
+Instead of `runlist`, you can also specify a range with e.g. `runs: [79000 80000]`. The full file in the [Appendix](#appendix-complete-yaml-files) shows additional parameters to control the spider(s), monitoring, priority, etc. Also shown is how to run submission and/or spidering of the same job type from multiple submit hosts.
 
 ## Add autopilot to the crontab(s)
-To run, a setup script has to be sourced and a python executable invoked with the location of the steering file. I.~e., the abstract command for cron is
+To run, a setup script has to be sourced and a python executable invoked with the location of the steering file. I.e., the abstract command for `cron` is
 ```bash
 source /path/to/this_sphenixprod.sh
 production_control.py --steer /path/to/autopilot.yaml
 ```
-Console output in cron jobs spams emails to whoever is at the receiving end (Chris), so in practice we need to redirect the output. It gets logged automatically anyway (the `-vv` flag increases verbosity to `DEBUG` level). The full line to be added to the crontabs (on at least those hosts that should run the production) is
+Console output in cron jobs spams emails to whoever is at the receiving end (Chris), so in practice we need to redirect the output. It gets logged automatically anyway (the `-vv` flag increases verbosity to `DEBUG` level). The full line to be added to the crontabs (on at least those hosts that should run the production) is:
 ```bash
 # pro001 run3oo calo 
 15,55 * * * * source /sphenix/u/sphnxpro/mainkolja/sphenixprod/this_sphenixprod.sh >& /dev/null && production_control.py --steer 
 /sphenix/u/sphnxpro/Production2026/run3oo_calo_pro001/run3oo_calo_pro001/autopilot_run3oo_calo_physics_pro001_2025p009.yaml -vv  >& /dev/null
 ```
-For the 
 To generate more complex `cron` time expressions, see [crontab.guru](https://crontab.guru/).
 
 The proper way to edit crontabs is to edit the version controlled (and soft-linked) named file in `sphnxpro`'s home directory, then call the `crontab` command with the file as an argument **on the proper host**.
@@ -226,7 +226,7 @@ git commit -a -m "Setup for calo production using prod.001 and pcdbtag001"
 ```
 And create an annotated lightweight tag, again reusing the name we've given this production. Then push everything to github.
 ```bash
-git tag -a run3oo_calo_pro001_pcdb001_v001 -m "Setup for calo production using prod.001 and pcdbtag001"
+git tag -a tag_run3oo_calo_pro001_pcdb001_v001 -m "Setup for calo production using prod.001 and pcdbtag001"
 git push --follow-tags
 ```
 
