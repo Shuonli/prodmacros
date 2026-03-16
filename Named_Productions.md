@@ -25,9 +25,9 @@ Then make a copy of the appropriate directory, again slightly differently named.
 cp -r run3oo dir_run3oo_calo_pro001_pcdb001_v001
 git add dir_run3oo_calo_pro001_pcdb001_v001
 ```
-Optional: No other directories are needed at this point, so we can delete them
+Optional: The autopilot control and the general instructions shouldn't be edited here. No other directories are needed at this point either, so we can delete all of it.
 ```bash
-git rm -r run*
+git rm -r Named_Productions.md active_productions.txt run* 
 ```
 
 A production needs:
@@ -50,7 +50,7 @@ triggered_code
 
 Optional: We can delete unneeded directories, in this case tracking and streaming code. It makes sense to delete the branch's copy of this markdown file as well to avoid accidental spaghettification; production specific comments should go into a dedicated README file.
 ```bash
-git rm -rf tracking_code streaming_code Named_Productions.md active_productions.txt
+git rm -rf tracking_code streaming_code
 touch README_run3oo_calo_pro001_pcdb001_v001.md
 ```
 
