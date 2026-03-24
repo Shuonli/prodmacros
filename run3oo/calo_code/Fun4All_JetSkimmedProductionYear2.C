@@ -68,7 +68,7 @@ void Fun4All_JetSkimmedProductionYear2(int nEvents = 1000,
   se->VerbosityDownscale(10000);
   recoConsts *rc = recoConsts::instance();
 
-  pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fname_calo);
+  std::pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fname_calo);
   int runnumber = runseg.first;
 
   // conditions DB flags and timestamp
